@@ -67,3 +67,10 @@ steps:
     testRunner: JUnit
     testResultsFiles: '**/test-results.xml'
   condition: succeededOrFailed()
+
+- task: PublishCodeCoverageResults@1
+  displayName: Publish code coverage results
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: $(Build.SourcesDirectory)/vscode-powershell/coverage/cobertura-coverage.xml
+    reportDirectory: $(Build.SourcesDirectory)/vscode-powershell/coverage/lcov-report
