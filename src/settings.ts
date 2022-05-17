@@ -27,8 +27,7 @@ export enum CommentType {
 }
 
 export interface IPowerShellAdditionalExePathSettings {
-    versionName: string;
-    exePath: string;
+    [versionName: string]: string;
 }
 
 export interface IBugReportingSettings {
@@ -79,12 +78,11 @@ export interface IDeveloperSettings {
 }
 
 export interface ISettings {
-    powerShellAdditionalExePaths?: IPowerShellAdditionalExePathSettings[];
+    powerShellAdditionalExePaths?: IPowerShellAdditionalExePathSettings;
     powerShellDefaultVersion?: string;
     // This setting is no longer used but is here to assist in cleaning up the users settings.
     powerShellExePath?: string;
     promptToUpdatePowerShell?: boolean;
-    promptToUpdatePackageManagement?: boolean;
     bundledModulesPath?: string;
     startAsLoginShell?: IStartAsLoginShellSettings;
     startAutomatically?: boolean;
@@ -226,15 +224,13 @@ export function load(): ISettings {
         startAutomatically:
             configuration.get<boolean>("startAutomatically", true),
         powerShellAdditionalExePaths:
-            configuration.get<IPowerShellAdditionalExePathSettings[]>("powerShellAdditionalExePaths", undefined),
+            configuration.get<IPowerShellAdditionalExePathSettings>("powerShellAdditionalExePaths", undefined),
         powerShellDefaultVersion:
             configuration.get<string>("powerShellDefaultVersion", undefined),
         powerShellExePath:
             configuration.get<string>("powerShellExePath", undefined),
         promptToUpdatePowerShell:
             configuration.get<boolean>("promptToUpdatePowerShell", true),
-        promptToUpdatePackageManagement:
-            configuration.get<boolean>("promptToUpdatePackageManagement", true),
         bundledModulesPath:
             "../modules", // Because the extension is always at `<root>/out/main.js`
         useX86Host:
@@ -272,7 +268,7 @@ export function load(): ISettings {
             //   is the reason terminals on macOS typically run login shells by default which set up
             //   the environment. See http://unix.stackexchange.com/a/119675/115410"
             configuration.get<IStartAsLoginShellSettings>("startAsLoginShell", defaultStartAsLoginShellSettings),
-        cwd:
+        cwd: // TODO: Should we resolve this path and/or default to a workspace folder?
             configuration.get<string>("cwd", null),
     };
 }

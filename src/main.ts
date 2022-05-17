@@ -5,7 +5,7 @@
 
 import path = require("path");
 import vscode = require("vscode");
-import TelemetryReporter from "vscode-extension-telemetry";
+import TelemetryReporter from "@vscode/extension-telemetry";
 import { DocumentSelector } from "vscode-languageclient";
 import { CodeActionsFeature } from "./features/CodeActions";
 import { ConsoleFeature } from "./features/Console";
@@ -175,6 +175,7 @@ export function activate(context: vscode.ExtensionContext): IPowerShellExtension
         registerExternalExtension: (id: string, apiVersion: string = 'v1') => externalApi.registerExternalExtension(id, apiVersion),
         unregisterExternalExtension: uuid => externalApi.unregisterExternalExtension(uuid),
         getPowerShellVersionDetails: uuid => externalApi.getPowerShellVersionDetails(uuid),
+        waitUntilStarted: uuid => externalApi.waitUntilStarted(uuid),
     };
 }
 

@@ -6,7 +6,6 @@ import * as fs from "fs";
 import * as path from "path";
 import rewire = require("rewire");
 import vscode = require("vscode");
-import { suiteSetup } from "mocha";
 import utils = require("../utils");
 import { sleep } from "../../src/utils";
 
@@ -19,10 +18,10 @@ enum LaunchType {
     Run,
 }
 
-suite("RunCode tests", () => {
-    suiteSetup(utils.ensureExtensionIsActivated);
+describe("RunCode feature", function () {
+    before(utils.ensureEditorServicesIsConnected);
 
-    test("Can create the launch config", () => {
+    it("Creates the launch config", function () {
         const commandToRun: string = "Invoke-Build";
         const args: string[] = ["Clean"];
 
@@ -43,20 +42,18 @@ suite("RunCode tests", () => {
         assert.deepStrictEqual(actual, expected);
     });
 
-    test("Can run Pester tests from file", async () => {
+    it("Runs Pester tests from a file", async function () {
         const pesterTests = path.resolve(__dirname, "../../../examples/Tests/SampleModule.Tests.ps1");
         assert(fs.existsSync(pesterTests));
 
         // Open the PowerShell file with Pester tests and then wait a while for
         // the extension to finish connecting to the server.
         await vscode.commands.executeCommand("vscode.open", vscode.Uri.file(pesterTests));
-        await sleep(15000);
 
         // Now run the Pester tests, check the debugger started, wait a bit for
         // it to run, and then kill it for safety's sake.
         assert(await vscode.commands.executeCommand("PowerShell.RunPesterTestsFromFile"));
         assert(vscode.debug.activeDebugSession !== undefined);
-        await sleep(5000);
         await vscode.debug.stopDebugging();
-    }).timeout(30000);
+    });
 });

@@ -2,9 +2,7 @@
 // Licensed under the MIT License.
 
 import cp = require("child_process");
-import fs = require("fs");
-import net = require("net");
-import os = require("os");
+import * as semver from "semver";
 import path = require("path");
 import vscode = require("vscode");
 import { Logger } from "./logging";
@@ -73,7 +71,6 @@ export class PowerShellProcess {
         }
 
         powerShellArgs.push("-NoProfile");
-        powerShellArgs.push("-NonInteractive");
 
         // Only add ExecutionPolicy param on Windows
         if (utils.isWindows) {
@@ -105,14 +102,21 @@ export class PowerShellProcess {
         utils.deleteSessionFile(this.sessionFilePath);
 
         // Launch PowerShell in the integrated terminal
-        this.consoleTerminal =
-            vscode.window.createTerminal({
-                name: this.title,
-                shellPath: this.exePath,
-                shellArgs: powerShellArgs,
-                hideFromUser: !this.sessionSettings.integratedConsole.showOnStartup,
-                cwd: this.sessionSettings.cwd
-            });
+        const terminalOptions: vscode.TerminalOptions = {
+            name: this.title,
+            shellPath: this.exePath,
+            shellArgs: powerShellArgs,
+            cwd: this.sessionSettings.cwd,
+            hideFromUser: !this.sessionSettings.integratedConsole.showOnStartup,
+            iconPath: new vscode.ThemeIcon("terminal-powershell"),
+        };
+
+        if (semver.gte(vscode.version, "1.65.0")) {
+            // @ts-ignore TODO: Don't ignore after we update our engine.
+            terminalOptions.isTransient = true;
+        }
+
+        this.consoleTerminal = vscode.window.createTerminal(terminalOptions);
 
         const pwshName = path.basename(this.exePath);
         this.log.write(`${pwshName} started.`);
@@ -144,7 +148,6 @@ export class PowerShellProcess {
     }
 
     public dispose() {
-
         // Clean up the session file
         utils.deleteSessionFile(this.sessionFilePath);
 
@@ -158,6 +161,14 @@ export class PowerShellProcess {
             this.consoleTerminal.dispose();
             this.consoleTerminal = undefined;
         }
+    }
+
+    public sendKeyPress() {
+        // NOTE: This is a regular character instead of something like \0
+        // because non-printing characters can cause havoc with different
+        // languages and terminal settings. We discard the character server-side
+        // anyway, so it doesn't matter what we send.
+        this.consoleTerminal.sendText("p", false);
     }
 
     private logTerminalPid(pid: number, exeName: string) {

@@ -1,5 +1,468 @@
 # PowerShell Extension Release History
 
+## v2022.5.1
+### Friday, May 06, 2022
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- 🐛 🔍 [vscode-powershell #3950](https://github.com/PowerShell/vscode-powershell/pull/3951) - Handle `sendKeyPress` events for temporary integrated consoles.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- 🐛 🔍 [vscode-powershell #3950](https://github.com/PowerShell/PowerShellEditorServices/pull/1791) - Send `sendKeyPress` event across DAP for temporary integrated consoles.
+
+## v2022.5.0
+### Tuesday, May 03, 2022
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+Welcome to the new and improved PowerShell for Visual Studio Code!
+
+This update represents a complete overhaul of the core PowerShell engine of PowerShell
+Editor Services, intending to create a more reliable and stable user experience. This
+release represents nearly two years' work, tracked in PSES
+[#1295](https://github.com/PowerShell/PowerShellEditorServices/issues/1295) and
+implemented in PSES
+[#1459](https://github.com/PowerShell/PowerShellEditorServices/pull/1459). It is our
+response to many issues opened by users over the last several years.
+
+Thank you to all of the community members who opened issues which helped motivate this
+major update.
+
+These major updates have also been tested over the last 6 months, in 13 releases of our
+[PowerShell Preview extension for Visual Studio
+Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.PowerShell-preview). A
+huge thank you to all of the community members who have tested these changes to the
+extension and have worked with us to polish the extension before releasing it through our
+stable channel.
+
+Please see our
+[blog](https://devblogs.microsoft.com/powershell/major-update-to-the-powershell-extension-for-visual-studio-code)
+for more details!
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- ✨ 🙏 [PowerShellEditorServices #1787](https://github.com/PowerShell/PowerShellEditorServices/pull/1787) - Bump PSReadLine to `v2.2.5`.
+
+## v2022.5.0-preview
+### Monday, May 02, 2022
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+Fourth Release Candidate! Thanks for finding bugs and helping us squash them!
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- ✨ 📟 [PowerShellEditorServices #1785](https://github.com/PowerShell/PowerShellEditorServices/pull/1785) - Add `IHostUISupportsMultipleChoiceSelection` implementation.
+- 🐛 🔍 [PowerShellEditorServices #1784](https://github.com/PowerShell/PowerShellEditorServices/pull/1784) - Do not exit from `DebuggerStop` unless resuming.
+
+## v2022.4.3-preview
+### Thursday, April 28, 2022
+
+Third Release Candidate. Our recent debugger and `ReadKey` overhauls revealed some other
+bugs that needed squashing! Please test this thoroughly. We're gaining confidence!
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- 🐛 🙏 [vscode-powershell #3939](https://github.com/PowerShell/vscode-powershell/pull/3939) - Send `p` instead of `\0` for `sendKeyPress`.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- 🐛 🛫 [PowerShellEditorServices #1782](https://github.com/PowerShell/PowerShellEditorServices/pull/1782) - Fix ordering of startup tasks so `psEditor` is defined before profiles are loaded.
+- 🐛 📟 [PowerShellEditorServices #1781](https://github.com/PowerShell/PowerShellEditorServices/pull/1781) - Bring back `WriteWithPrompt()`.
+- 🐛 📟 [vscode-powershell #3937](https://github.com/PowerShell/PowerShellEditorServices/pull/1779) - Update to latest PSReadLine beta (with fix for race condition).
+- 🐛 🔍 [PowerShellEditorServices #1778](https://github.com/PowerShell/PowerShellEditorServices/pull/1778) - Fix extra prompting and manual debugger commands.
+- ✨ 🚂 [PowerShellEditorServices #1777](https://github.com/PowerShell/PowerShellEditorServices/pull/1777) - Consolidate `InterruptCurrentForeground` and `MustRunInForeground`.
+- ✨ 🚂 [PowerShellEditorServices #1776](https://github.com/PowerShell/PowerShellEditorServices/pull/1776) - Don't cancel on disposal of `CancellationScope`.
+
+## v2022.4.2-preview
+### Wednesday, April 20, 2022
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+Just including updates to PowerShell Editor Services. This is the second Release
+Candidate! Please give it a thorough test.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- 🐛 👷 [PowerShellEditorServices #1761](https://github.com/PowerShell/PowerShellEditorServices/pull/1766) - Bump `net461` to `net462` due to upcoming end of support.
+- 🐛 💎 [vscode-powershell #3928](https://github.com/PowerShell/PowerShellEditorServices/pull/1764) - Fix formatting handlers and PSScriptAnalyzer loading.
+- 🐛 🔍 [PowerShellEditorServices #1762](https://github.com/PowerShell/PowerShellEditorServices/pull/1762) - Fix prompt spam and general debugger reliability improvements.
+- ✨ 🙏 [PowerShellEditorServices #1479](https://github.com/PowerShell/PowerShellEditorServices/pull/1759) - Enable IDE0005 (unneccessary using statements) as error.
+- 🐛 🙏 [PowerShellEditorServices #1754](https://github.com/PowerShell/PowerShellEditorServices/pull/1758) - With a fix in PSReadLine, we don't have to return a "null" key press.
+
+## v2022.4.1-preview
+### Monday, April 18, 2022
+
+This is our first Release Candidate. We've merged a set of major fixes to the debugger so
+that attaching to remote processes / runspaces now works again. While the extension is not
+perfect (yet), we believe at this point the preview far exceeds the stable extension in
+terms of usability and stability, and it is time to roll this out. Please give this a
+thorough testing, as we hope to roll it into the stable extension next week.
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- ✨ 📺 [vscode-powershell #3919](https://github.com/PowerShell/vscode-powershell/pull/3919) - Improve Settings Editor experience in a few places. (Thanks @TylerLeonhardt!)
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- #️⃣ 🙏 [PowerShellEditorServices #1757](https://github.com/PowerShell/PowerShellEditorServices/pull/1757) - Enable code analysis and formatting as errors on build.
+- ✨ 🚂 [PowerShellEditorServices #1755](https://github.com/PowerShell/PowerShellEditorServices/pull/1755) - Apply automatic fixes (manually).
+- 🐛 🔍 [PowerShellEditorServices #1736](https://github.com/PowerShell/PowerShellEditorServices/pull/1752) - Fix attach to process debugging.
+
+## v2022.4.0-preview
+### Tuesday, April 12, 2022
+
+We delayed moving the preview branch to stable in order to fix issues surrounding our
+`ReadKey` / `ReadLine` logic. This preview contains a new minor release of PowerShell
+Editor Services with an entire rewrite of that logic, utilizing what we hope is a much
+better workaround for the underlying issue in .NET's `Console.ReadKey`. Please give this
+release a thorough testing, especially in the console with PSReadLine.
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- 🐛 🙏 [vscode-powershell #3911](https://github.com/PowerShell/vscode-powershell/pull/3911) - Add `sendKeyPress` notification used to "cancel" `Console.ReadKey`.
+- 🐛 ✂️ [vscode-powershell #3276](https://github.com/PowerShell/vscode-powershell/pull/3900) - Fix snippet prefixes (especially `#region`).
+- ✨ 📺 [vscode-powershell #3897](https://github.com/PowerShell/vscode-powershell/pull/3897) - Add PowerShell icon to Integrated Console.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- 🐛 🙏 [PowerShellEditorServices #1751](https://github.com/PowerShell/PowerShellEditorServices/pull/1751) - Re-workaround uncancellable `Console.ReadKey`.
+- 🐛 ‍🕵️ [PowerShellEditorServices #1749](https://github.com/PowerShell/PowerShellEditorServices/pull/1749) - Correctly map `SuggestedCorrection` to `MarkerCorrection`. (Thanks @bergmeister!)
+
+## v2022.3.1-preview
+### Thursday, March 24, 2022
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- 🐛 📺 [vscode-powershell #3878](https://github.com/PowerShell/vscode-powershell/pull/3883) - Add several more commands to activation events.
+- 🐛 📖 [vscode-powershell #3857](https://github.com/PowerShell/vscode-powershell/pull/3879) - Update troubleshooting guide etc.
+- 🐛 📺 [vscode-powershell #3874](https://github.com/PowerShell/vscode-powershell/pull/3877) - Add PowerShell version to language status item.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- #️⃣ 🙏 [PowerShellEditorServices #1746](https://github.com/PowerShell/PowerShellEditorServices/pull/1746) - Replace `_consoleHostUI` with `_underlyingHostUI`.
+
+## v2022.3.0-preview
+### Thursday, March 10, 2022
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- ✨ 📺 [vscode-powershell #2499](https://github.com/PowerShell/vscode-powershell/pull/3869) - Use Code's new Language Status API.
+- ✨ 📺 [vscode-powershell #3866](https://github.com/PowerShell/vscode-powershell/pull/3866) - Fix title of PowerShell Command Explorer pane.
+- ✨ 📺 [vscode-powershell #3865](https://github.com/PowerShell/vscode-powershell/pull/3865) - Replace custom graphics with updated Codicons.
+- ✨ 🔧 [vscode-powershell #3858](https://github.com/PowerShell/vscode-powershell/pull/3859) - Deprecate `promptToUpdatePackageManagement`.
+- 🐛 📟 [vscode-powershell #3360](https://github.com/PowerShell/vscode-powershell/pull/3854) - Use new `isTransient` API to prevent duplicate integrated consoles.
+- 🐛 🔍 [vscode-powershell #3259](https://github.com/PowerShell/vscode-powershell/pull/3852) - Fix Pester `Test/Debug` code lenses to now change directory.
+- ✨ ✂️ [vscode-powershell #3839](https://github.com/PowerShell/vscode-powershell/pull/3839) - Modernize built-in snippets. (Thanks @JustinGrote!)
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- ✨ 🧠 [vscode-powershell #3364](https://github.com/PowerShell/PowerShellEditorServices/pull/1738) - Improve completion logic (more icons!).
+- 🐛 🛫 [PowerShellEditorServices #1576](https://github.com/PowerShell/PowerShellEditorServices/pull/1735) - Remove `PackageManagement` module update prompt.
+- 🐛 📟 [PowerShellEditorServices #1734](https://github.com/PowerShell/PowerShellEditorServices/pull/1734) - Finish redirection of `$Host.PrivateData`.
+- 🐛 📟 [PowerShellEditorServices #1639](https://github.com/PowerShell/PowerShellEditorServices/pull/1732) - Redirect `PSHost.Notify*Application` methods.
+
+## v2022.2.2-preview
+### Thursday, February 24, 2022
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- 🐛 📟 [vscode-powershell #3820](https://github.com/PowerShell/vscode-powershell/pull/3847) - Remove `-NonInteractive` from PowerShell startup sequence.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- 🐛 🛫 [vscode-powershell #2658](https://github.com/PowerShell/PowerShellEditorServices/pull/1726) - Avoid error when `exclude` entry is a clause.
+- 🐛 🚂 [vscode-powershell #3691](https://github.com/PowerShell/PowerShellEditorServices/pull/1725) - Fix editor commands to interrupt current prompt.
+- ✨ 🔍 [PowerShellEditorServices #1724](https://github.com/PowerShell/PowerShellEditorServices/pull/1724) - Re-enable line breakpoints for untitled scripts.
+- ✨ 🙏 [PowerShellEditorServices #1709](https://github.com/PowerShell/PowerShellEditorServices/pull/1723) - Update PSReadLine to 2.2.2.
+- 🐛 📟 [vscode-powershell #3807](https://github.com/PowerShell/PowerShellEditorServices/pull/1719) - Reset progress messages at end of REPL.
+- 🐛 ‍🕵️ [PowerShellEditorServices #1718](https://github.com/PowerShell/PowerShellEditorServices/pull/1718) - Return a code action for each diagnostic record. (Thanks @bergmeister!)
+
+## v2022.2.1-preview
+### Wednesday, February 16, 2022
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- #️⃣ 🙏 [vscode-powershell #3824](https://github.com/PowerShell/vscode-powershell/pull/3824) - Add known `PowerShell.OnIdle` event bug to `troubleshooting.md`. (Thanks @StevenBucher98!)
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- 🐛 🔍 [vscode-powershell #3832](https://github.com/PowerShell/PowerShellEditorServices/pull/1712) - Avoid stopping the debugger when canceling other tasks in a debug session.
+- 🐛 📟 [PowerShellEditorServices #1607](https://github.com/PowerShell/PowerShellEditorServices/pull/1711) - Redirect `EditorServicesConsolePSHost.PrivateData` to `_internalHost`.
+- 🐛 📟 [PowerShellEditorServices #1699](https://github.com/PowerShell/PowerShellEditorServices/pull/1710) - Handle edge case where `prompt` is undefined.
+- 🐛 🔍 [PowerShellEditorServices #1704](https://github.com/PowerShell/PowerShellEditorServices/pull/1704) - Avoid recording debugger commands in the history.
+- ✨ 🔍 [PowerShellEditorServices #1703](https://github.com/PowerShell/PowerShellEditorServices/pull/1703) - Use `static readonly` for default `ExecutionOptions`.
+- 🐛 🔍 [vscode-powershell #3655](https://github.com/PowerShell/PowerShellEditorServices/pull/1702) - Fix running untitled scripts with arguments (but break line breakpoints) .
+- ✨ 🙏 [PowerShellEditorServices #1694](https://github.com/PowerShell/PowerShellEditorServices/pull/1694) - Add `Thread.Sleep(100)` to throttle REPL when it's non-interactive. (Thanks @colinblaise!)
+
+## v2022.2.0-preview
+### Wednesday, February 02, 2022
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+Just including several PSES fixes, namely around the F5 and F8 bugs.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- 🐛 📟 [vscode-powershell #3786](https://github.com/PowerShell/PowerShellEditorServices/pull/1691) - Print prompt and command when `WriteInputToHost` is true.
+- 🐛 📟 [vscode-powershell #3685](https://github.com/PowerShell/PowerShellEditorServices/pull/1690) - Display prompt after `F8` finishes.
+- 🐛 🔍 [vscode-powershell #3522](https://github.com/PowerShell/PowerShellEditorServices/pull/1685) - Synchronize PowerShell debugger and DAP server state.
+- ✨ 🔍 [PowerShellEditorServices #1680](https://github.com/PowerShell/PowerShellEditorServices/pull/1680) - Display `DictionaryEntry` as key/value pairs in debugger. (Thanks @JustinGrote!)
+
+## v2022.1.1-preview
+### Monday, January 24, 2022
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- 🐛 📺 [vscode-powershell #3710](https://github.com/PowerShell/vscode-powershell/pull/3772) - Fix `PowerShell.Debug.Start` to just launch current file.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- #️⃣ 💎 [PowerShellEditorServices #1676](https://github.com/PowerShell/PowerShellEditorServices/pull/1676) - Use EditorConfig for dotnet build and suppress existing issues. (Thanks @JustinGrote!)
+- 🐛 🔍 [PowerShellEditorServices #1672](https://github.com/PowerShell/PowerShellEditorServices/pull/1670) - Handle `debuggerResult` being null in `ProcessDebuggerResult`.
+- 🐛 🙏 [PowerShellEditorServices #1663](https://github.com/PowerShell/PowerShellEditorServices/pull/1669) - Fix off-by-one error in validation within `GetOffsetAtPosition`.
+- 🐛 📟 [PowerShellEditorServices #1667](https://github.com/PowerShell/PowerShellEditorServices/pull/1668) - Fix `Write-Host -NoNewLine` and `-*Color`. (Thanks @SeeminglyScience!)
+- 🐛 🔍 [PowerShellEditorServices #1661](https://github.com/PowerShell/PowerShellEditorServices/pull/1664) - Fix `DebuggerSetsVariablesWithConversion` test.
+- ✨ 🙏 [vscode-powershell #2800](https://github.com/PowerShell/PowerShellEditorServices/pull/1662) - Enable resolution of an alias to its function definition.
+- ✨ 🔍 [PowerShellEditorServices #1633](https://github.com/PowerShell/PowerShellEditorServices/pull/1634) - Display `IEnumerables` and `IDictionaries` in debugger prettily (with "Raw View" available). (Thanks @JustinGrote!)
+
+## v2022.1.0-preview
+### Monday, January 10, 2022
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+Happy New Year! Please enjoy a new preview release! We have re-enabled nearly all of the
+tests in PowerShell Editor Services, and are becoming more confident in our ability to fix
+your reported issues without introducing regressions. Thanks so much for continuing to use
+and help improve the extension.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- ✨ 🙏 [PowerShellEditorServices #1658](https://github.com/PowerShell/PowerShellEditorServices/pull/1658) - Bump PSReadLine module to 2.2.0-beta5.
+- 🐛 🚨 [PowerShellEditorServices #1444](https://github.com/PowerShell/PowerShellEditorServices/pull/1657) - Re-enable `ExtensionCommandTests.cs`.
+- 🐛 🙏 [PowerShellEditorServices #1656](https://github.com/PowerShell/PowerShellEditorServices/pull/1656) - Resurrect support to resolve aliased references.
+- 🐛 🚨 [PowerShellEditorServices #1445](https://github.com/PowerShell/PowerShellEditorServices/pull/1655) - Split and clean up `LanguageServiceTests.cs`.
+- 🐛 🔍 [vscode-powershell #3715](https://github.com/PowerShell/PowerShellEditorServices/pull/1652) - Fix regression with `F5` to use `.` instead of `&` operator.
+- ✨ 🚨 [vscode-powershell #3677](https://github.com/PowerShell/PowerShellEditorServices/pull/1651) - Enable `PsesInternalHostTests` (previously `PowerShellContextTests`).
+
+## v2021.12.0
+### Wednesday, December 22, 2021
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+This release *does not* include the latest major update of PowerShell Editor Services. We
+are updating the stable extension to bring some bug fixes forward. Please try out the
+[PowerShell Preview extension][] for the latest and hopefully greatest experience, and
+help us squash those bugs!
+
+[PowerShell Preview extension]: https://marketplace.visualstudio.com/items?itemName=ms-vscode.PowerShell-Preview
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+This extension update includes PowerShell Editor Services [v2.5.3][], a re-release of
+[v2.5.2][] which was the last version before the major pipeline and threading overhaul was
+merged in [v3.0.0][]. By re-releasing we are able to update the module's signature with a
+renewed certificate.
+
+[v2.5.3]: https://github.com/PowerShell/PowerShellEditorServices/releases/tag/v2.5.3
+[v2.5.2]: https://github.com/PowerShell/PowerShellEditorServices/releases/tag/v2.5.2
+[v3.0.0]: https://github.com/PowerShell/PowerShellEditorServices/releases/tag/v3.0.0
+
+## v2021.12.0-preview
+### Monday, December 20, 2021
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+We're hard at work continuing to improvo the stability and coverage of the PowerShell
+Preview so we can bring the updates to the regular extension. Most recently we got the unit tests
+covering the debugger back online, which revealed a bug in the ability to set variables
+through the debugger. We're continuing to work to resolve this and re-enable the rest of
+our tests. Please keep using the Preview if you're able and filing bug reports, we
+appreciate it!
+
+- 🐛 🔍 [vscode-powershell #3713](https://github.com/PowerShell/vscode-powershell/pull/3728) - Support debugging without a workspace.
+- 🐛 📺 [vscode-powershell #3709](https://github.com/PowerShell/vscode-powershell/pull/3735) - Fix `EnableISEMode` for Azure Data Studio.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- 🐛 🚂 [vscode-powershell #3718](https://github.com/PowerShell/PowerShellEditorServices/pull/1647) - Create `$psEditor` as a constant.
+- #️⃣ 🙏 [PowerShellEditorServices #1641](https://github.com/PowerShell/PowerShellEditorServices/pull/1641) - Added check to see if `PSModulePath` already contained `BundledModulePath`. (Thanks @dkattan!)
+- #️⃣ 🙏 [PowerShellEditorServices #1640](https://github.com/PowerShell/PowerShellEditorServices/pull/1640) - Implemented `-LanguageServiceOnly` switch. (Thanks @dkattan!)
+- 🐛 🛫 [PowerShellEditorServices #1638](https://github.com/PowerShell/PowerShellEditorServices/pull/1638) - Fix `BundledModulePath` and PSReadLine loading (redux).
+- 🐛 🔍 [PowerShellEditorServices #1635](https://github.com/PowerShell/PowerShellEditorServices/pull/1635) - Re-enable `DebugServiceTests` suite.
+
+## v2021.11.1-preview
+### Monday, November 22, 2021
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- 🐛 👷 [vscode-powershell #3682](https://github.com/PowerShell/vscode-powershell/pull/3682) - Remove Windows Server 2016 from CI.
+- #️⃣ 🙏 [vscode-powershell #3681](https://github.com/PowerShell/vscode-powershell/pull/3681) - Update `vsce` to `2.2.0`.
+- 🐛 🚨 [vscode-powershell #3674](https://github.com/PowerShell/vscode-powershell/pull/3674) - Skip `UpdatePowerShell` tests in CI.
+- ✨ 🚨 [vscode-powershell #3643](https://github.com/PowerShell/vscode-powershell/pull/3643) - Improve test stability with `ensureEditorServicesIsConnected`.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- ✨ 📖 [PowerShellEditorServices #1631](https://github.com/PowerShell/PowerShellEditorServices/pull/1631) - Add Justin Grote as maintainer.
+- 🐛 🔍 [vscode-powershell #3667](https://github.com/PowerShell/PowerShellEditorServices/pull/1630) - Improve debugger's variable population mechanism. (Thanks @JustinGrote and @SeeminglyScience!)
+- 🐛 👷 [PowerShellEditorServices #1628](https://github.com/PowerShell/PowerShellEditorServices/pull/1628) - Fix build for Apple M1 when running PowerShell 7.2 (arm64).
+- 🐛 👷 [PowerShellEditorServices #1626](https://github.com/PowerShell/PowerShellEditorServices/pull/1626) - Remove Windows Server 2016 from CI.
+- ✨ 👷 [PowerShellEditorServices #1619](https://github.com/PowerShell/PowerShellEditorServices/pull/1619) - Install a single `dotnet` SDK.
+
+## v2021.11.0-preview
+### Wednesday, November 03, 2021
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- 🐛 🐢 [vscode-powershell #3652](https://github.com/PowerShell/vscode-powershell/issues/3652) - Pester code lens broken in latest preview.
+- 🐛 📟 [vscode-powershell #3653](https://github.com/PowerShell/vscode-powershell/issues/3653) - `$PROFILE` variable has changed type and behavior.
+- 🐛 📟 [vscode-powershell #3650](https://github.com/PowerShell/vscode-powershell/issues/3650) - Profiles not loading in lastest preview.
+- 🐛 📖 [vscode-powershell #3658](https://github.com/PowerShell/vscode-powershell/pull/3658) - Fix typo in settings for 'Force Clear Scrollback Buffer'. (Thanks @PrzemyslawKlys!)
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- 🐛 🔍 [PowerShellEditorServices #1608](https://github.com/PowerShell/PowerShellEditorServices/pull/1611) - Improve PowerShell command and argument escaping. (Thanks @JustinGrote!)
+- 🐛 📟 [PowerShellEditorServices #1603](https://github.com/PowerShell/PowerShellEditorServices/pull/1606) - Add `LengthInBufferCells` back to `EditorServicesConsolePSHostRawUserInterface`.
+- #️⃣ 🙏 [PowerShellEditorServices #1604](https://github.com/PowerShell/PowerShellEditorServices/pull/1604) - Fix profile loading and `$PROFILE` variable.
+
+## v2021.10.3-preview
+### Thursday, October 28, 2021
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+No changes! New preview for PowerShell Editor Services v3.0.0!
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+This preview release includes a complete overhaul of the core PowerShell engine
+of PowerShell Editor Services.
+This represents over a year's work,
+tracked in [PSES #1295](https://github.com/PowerShell/PowerShellEditorServices/issues/1295)
+and implemented in [PSES #1459](https://github.com/PowerShell/PowerShellEditorServices/pull/1459),
+and is our answer to many, many issues
+opened by users over the last few years.
+We're hoping you'll see a marked improvement
+in the reliability, performance and footprint
+of the extension as a result.
+
+Previously the Integrated Console was run
+by setting threadpool tasks on a shared main runspace,
+and where LSP servicing was done with PowerShell idle events.
+This lead to overhead, threading issues
+and a complex implementation intended to work around
+the asymmetry between PowerShell as a synchronous,
+single-threaded runtime and a language server
+as an asynchronous, multi-threaded service.
+
+Now, PowerShell Editor Services maintains its own dedicated pipeline thread,
+which is able to service requests similar to JavaScript's event loop,
+meaning we can run everything synchronously on the correct thread.
+We also get more efficiency because we can directly call
+PowerShell APIs and code written in C# from this thread,
+without the overhead of a PowerShell pipeline.
+
+This change has overhauled how we service LSP requests,
+how the Integrated Console works,
+how PSReadLine is integrated,
+how debugging is implemented,
+how remoting is handled,
+and a long tail of other features in PowerShell Editor Services.
+
+Also, in making it, while 6,000 lines of code were added,
+we removed 12,000,
+for a more maintainable, more efficient
+and easier to understand extension backend.
+
+While most of our testing has been re-enabled
+(and we're working on adding more),
+there are bound to be issues with this new implementation.
+Please give this a try and let us know if you run into anything.
+
+We also want to thank [@SeeminglyScience](https://github.com/SeeminglyScience)
+for his help and knowledge as we've made this migration.
+
+Finally, a crude breakdown of the work from the commits:
+
+- An initial dedicated pipeline thread consumer implementation
+- Implement the console REPL
+- Implement PSRL idle handling
+- Implement completions
+- Move to invoking PSRL as a C# delegate
+- Implement cancellation and <kbd>Ctrl</kbd>+<kbd>C</kbd>
+- Make <kbd>F8</kbd> work again
+- Ensure execution policy is set correctly
+- Implement $PROFILE support
+- Make nested prompts work
+- Implement REPL debugging
+- Implement remote debugging in the REPL
+- Hook up the debugging UI
+- Implement a new concurrent priority queue for PowerShell tasks
+- Reimplement the REPL synchronously rather than on its own thread
+- Really get debugging working...
+- Implement DSC breakpoint support
+- Reimplement legacy readline support
+- Ensure stdio is still supported as an LSP transport
+- Remove PowerShellContextService and other defunct code
+- Get integration tests working again (and improve diagnosis of PSES failures)
+- Get unit testing working again (except debug service tests)
+
+## v2021.10.2
+### Thursday, October 28, 2021
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+The PSScriptAnalyzer rule explanations now open the beautiful published documentation at
+[docs.microsoft.com](https://docs.microsoft.com/powershell/utility-modules/psscriptanalyzer/overview).
+
+- ✨ ‍🕵️ [vscode-powershell #3642](https://github.com/PowerShell/vscode-powershell/pull/3642) - Point PSScriptAnalyzer rules to published documentation. (Thanks @sdwheeler!)
+- ✨ 🚨 [vscode-powershell #3641](https://github.com/PowerShell/vscode-powershell/pull/3641) - Clean up unit tests' descriptions and logical separation.
+- ✨ 🚨 [vscode-powershell #3631](https://github.com/PowerShell/vscode-powershell/pull/3631) - Replace `() =>` arrow lambdas with `function ()` for Mocha.
+- #️⃣ 🙏 [vscode-powershell #3628](https://github.com/PowerShell/vscode-powershell/pull/3628) - Add missing `glob` dev dependency.
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+No changes in this release, but the next preview will include PowerShell Editor Services
+v3.0.0, with the pipeline rewrite!
+
+## v2021.10.1
+### Wednesday, October 20, 2021
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+Check out the new [Pester Tests][] adapter by [Justin Grote][] and inspired by [Tyler
+Leonhardt][]. While still under development, it provides integration with Visual Studio
+Code's new test explorer interface for Pester tests and is quite nice!
+
+[Pester tests]: https://marketplace.visualstudio.com/items?itemName=pspester.pester-test
+[Justin Grote]: https://twitter.com/justinwgrote
+[Tyler Leonhardt]: https://github.com/TylerLeonhardt
+
+- ✨ 👷 [vscode-powershell #3623](https://github.com/PowerShell/vscode-powershell/pull/3623) - Add `LinkEditorServices` task for developers.
+- ✨️ 🙏 [vscode-powershell #3430](https://github.com/PowerShell/vscode-powershell/pull/3613) - Setting to Disable Pester Code Lens. (Thanks @JustinGrote!)
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+- ✨ 👷 [PowerShellEditorServices #1589](https://github.com/PowerShell/PowerShellEditorServices/pull/1589) - Remove `BinClean` dependency from build task. (Thanks @JustinGrote!)
+- #️⃣ 🙏 [PowerShellEditorServices #1585](https://github.com/PowerShell/PowerShellEditorServices/pull/1585) - Setting to Disable Pester Code Lens. (Thanks @JustinGrote!)
+- #️⃣ 🙏 [PowerShellEditorServices #1578](https://github.com/PowerShell/PowerShellEditorServices/pull/1578) - Fix typo in comments. (Thanks @glennsarti!)
+
+## v2021.10.0
+### Friday, October 08, 2021
+
+This is a hot-fix release for an upstream change to the location of the PSScriptAnalyzer
+rules documentation.
+
+#### [vscode-powershell](https://github.com/PowerShell/vscode-powershell)
+
+- 🐛 ‍🕵️ [vscode-powershell #3608](https://github.com/PowerShell/vscode-powershell/pull/3608) - Fix base URI for PSScriptAnalyzer rule documentation. (Thanks @bgold09!)
+
+#### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
+
+No changes, but stay tuned for major updates!
+The [pipeline rewrite](https://github.com/PowerShell/vscode-powershell/projects/14)
+work is under review.
+
 ## v2021.9.2
 ### Thursday, September 30, 2021
 
@@ -158,7 +621,7 @@ for the full story!
 
 #### [PowerShellEditorServices](https://github.com/PowerShell/PowerShellEditorServices)
 
-- 👷🐛 [PowerShellEditorServices #1509](https://github.com/PowerShell/PowerShellEditorServices/issues/1509) Fix signing of files in release.
+- 👷🐛 [PowerShellEditorServices #1509](https://github.com/PowerShell/PowerShellEditorServices/issues/1509) - Fix signing of files in release.
 
 ## v2021.6.1
 ### Monday, June 21, 2021

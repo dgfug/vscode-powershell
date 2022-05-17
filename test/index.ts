@@ -11,10 +11,9 @@ import * as glob from "glob";
 export function run(): Promise<void> {
     // Create the mocha test
     const mocha = new Mocha({
-        ui: "tdd",
         color: !process.env.TF_BUILD, // colored output from test results
         reporter: "mocha-multi-reporters",
-        timeout: 5000,
+        timeout: 30000, // 30s because PowerShell startup is slow!
         reporterOptions: {
             // NOTE: The XML output by Mocha's xUnit reporter is actually in the
             // JUnit style. I'm unsure how no one else has noticed this.

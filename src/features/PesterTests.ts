@@ -91,11 +91,7 @@ export class PesterTestsFeature implements vscode.Disposable {
             ],
             internalConsoleOptions: "neverOpen",
             noDebug: (launchType === LaunchType.Run),
-            createTemporaryIntegratedConsole: settings.debugging.createTemporaryIntegratedConsole,
-            cwd:
-                currentDocument.isUntitled
-                    ? vscode.workspace.rootPath
-                    : path.dirname(currentDocument.fileName),
+            createTemporaryIntegratedConsole: settings.debugging.createTemporaryIntegratedConsole
         };
 
         if (lineNum) {
@@ -144,6 +140,6 @@ export class PesterTestsFeature implements vscode.Disposable {
         // Ensure the necessary script exists (for testing). The debugger will
         // start regardless, but we also pass its success along.
         return utils.fileExists(this.invokePesterStubScriptPath)
-            && vscode.debug.startDebugging(vscode.workspace.workspaceFolders[0], launchConfig);
+            && vscode.debug.startDebugging(vscode.workspace.workspaceFolders?.[0], launchConfig);
     }
 }

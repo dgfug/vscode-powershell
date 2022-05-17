@@ -6,7 +6,7 @@ import net = require("net");
 import path = require("path");
 import * as semver from "semver";
 import vscode = require("vscode");
-import TelemetryReporter from "vscode-extension-telemetry";
+import TelemetryReporter from "@vscode/extension-telemetry";
 import { Message } from "vscode-jsonrpc";
 import { Logger } from "./logging";
 import { PowerShellProcess } from "./process";
@@ -45,9 +45,12 @@ export class SessionManager implements Middleware {
     private focusConsoleOnExecute: boolean;
     private platformDetails: IPlatformDetails;
     private languageClientConsumers: LanguageClientConsumer[] = [];
+    // @ts-ignore TODO: Don't ignore after we update our engine.
+    private languageStatusItem: vscode.LanguageStatusItem;
     private statusBarItem: vscode.StatusBarItem;
     private languageServerProcess: PowerShellProcess;
     private debugSessionProcess: PowerShellProcess;
+    private debugEventHandler: vscode.Disposable;
     private versionDetails: IPowerShellVersionDetails;
     private registeredCommands: vscode.Disposable[] = [];
     private languageServerClient: LanguageClient = undefined;
@@ -59,11 +62,7 @@ export class SessionManager implements Middleware {
     // Initialized by the start() method, since this requires settings
     private powershellExeFinder: PowerShellExeFinder;
 
-    // When in development mode, VS Code's session ID is a fake
-    // value of "someValue.machineId".  Use that to detect dev
-    // mode for now until Microsoft/vscode#10272 gets implemented.
-    public readonly InDevelopmentMode =
-        vscode.env.sessionId === "someValue.sessionId";
+    public readonly InDevelopmentMode = vscode.ExtensionMode.Development;
 
     constructor(
         private log: Logger,
@@ -230,9 +229,10 @@ export class SessionManager implements Middleware {
             this.languageServerClient = undefined;
         }
 
-        // Kill the PowerShell proceses we spawned
+        // Kill the PowerShell process we spawned
         if (this.debugSessionProcess) {
             this.debugSessionProcess.dispose();
+            this.debugEventHandler.dispose();
         }
         if (this.languageServerProcess) {
             this.languageServerProcess.dispose();
@@ -262,6 +262,15 @@ export class SessionManager implements Middleware {
         sessionPath: string,
         sessionSettings: Settings.ISettings): PowerShellProcess {
 
+        // NOTE: We only support one temporary integrated console at a time. To
+        // support more, we need to track each separately, and tie the session
+        // for the event handler to the right process (and dispose of the event
+        // handler when the process is disposed).
+        if (this.debugSessionProcess) {
+            this.debugSessionProcess.dispose()
+            this.debugEventHandler.dispose();
+        }
+
         this.debugSessionProcess =
             new PowerShellProcess(
                 this.PowerShellExeDetails.exePath,
@@ -271,6 +280,17 @@ export class SessionManager implements Middleware {
                 this.editorServicesArgs + "-DebugServiceOnly ",
                 sessionPath,
                 sessionSettings);
+
+        // Similar to the regular integrated console, we need to send a key
+        // press to the process spawned for temporary integrated consoles when
+        // the server requests a cancellation os Console.ReadKey.
+        this.debugEventHandler = vscode.debug.onDidReceiveDebugSessionCustomEvent(
+            e => {
+                if (e.event === "powerShell/sendKeyPress") {
+                    this.debugSessionProcess.sendKeyPress();
+                }
+            }
+        );
 
         return this.debugSessionProcess;
     }
@@ -398,7 +418,6 @@ export class SessionManager implements Middleware {
     }
 
     private setStatusBarVersionString(runspaceDetails: IRunspaceDetails) {
-
         const psVersion = runspaceDetails.powerShellVersion;
 
         let versionString =
@@ -410,9 +429,7 @@ export class SessionManager implements Middleware {
             versionString += ` [${runspaceDetails.connectionString}]`;
         }
 
-        this.setSessionStatus(
-            versionString,
-            SessionStatus.Running);
+        this.setSessionVersion(versionString);
     }
 
     private registerCommands(): void {
@@ -426,10 +443,7 @@ export class SessionManager implements Middleware {
     }
 
     private startPowerShell() {
-
-        this.setSessionStatus(
-            "Starting PowerShell...",
-            SessionStatus.Initializing);
+        this.setSessionStatus("Starting...", SessionStatus.Initializing);
 
         const sessionFilePath =
             utils.getSessionFilePath(
@@ -448,7 +462,7 @@ export class SessionManager implements Middleware {
         this.languageServerProcess.onExited(
             () => {
                 if (this.sessionStatus === SessionStatus.Running) {
-                    this.setSessionStatus("Session exited", SessionStatus.Failed);
+                    this.setSessionStatus("Session Exited", SessionStatus.Failed);
                     this.promptForRestart();
                 }
             });
@@ -494,7 +508,7 @@ export class SessionManager implements Middleware {
 
     private promptForRestart() {
         vscode.window.showErrorMessage(
-            "The PowerShell session has terminated due to an error, would you like to restart it?",
+            "The PowerShell Integrated Console (PSIC) has stopped, would you like to restart it? (IntelliSense will not work unless the PSIC is active and unblocked.)",
             "Yes", "No")
             .then((answer) => { if (answer === "Yes") { this.restartSession(); }});
     }
@@ -525,6 +539,11 @@ export class SessionManager implements Middleware {
                     // backend uses "files" and "search" to ignore references.
                     configurationSection: [ utils.PowerShellLanguageId, "files", "search" ],
                     // fileEvents: vscode.workspace.createFileSystemWatcher('**/.eslintrc')
+                },
+                // NOTE: Some settings are only applicable on startup, so we send them during initialization.
+                initializationOptions: {
+                    enableProfileLoading: this.sessionSettings.enableProfileLoading,
+                    initialWorkingDirectory: this.sessionSettings.cwd,
                 },
                 errorHandler: {
                     // Override the default error handler to prevent it from
@@ -574,11 +593,10 @@ export class SessionManager implements Middleware {
                                         { powershellVersion: versionDetails.version });
                                 }
 
-                                this.setSessionStatus(
+                                this.setSessionVersion(
                                     this.versionDetails.architecture === "x86"
                                         ? `${this.versionDetails.displayVersion} (${this.versionDetails.architecture})`
-                                        : this.versionDetails.displayVersion,
-                                    SessionStatus.Running);
+                                        : this.versionDetails.displayVersion);
 
                                 // If the user opted to not check for updates, then don't.
                                 if (!this.sessionSettings.promptToUpdatePowerShell) { return; }
@@ -614,6 +632,14 @@ export class SessionManager implements Middleware {
                     this.languageServerClient.onNotification(
                         RunspaceChangedEventType,
                         (runspaceDetails) => { this.setStatusBarVersionString(runspaceDetails); });
+
+                    // NOTE: This fixes a quirk where PSES has a thread stuck on
+                    // Console.ReadKey, since it's not cancellable. On
+                    // "cancellation" the server asks us to send pretend to
+                    // press a key, thus mitigating all the quirk.
+                    this.languageServerClient.onNotification(
+                        SendKeyPressNotificationType,
+                        () => { this.languageServerProcess.sendKeyPress(); });
                 },
                 (reason) => {
                     this.setSessionFailure("Could not start language service: ", reason);
@@ -632,7 +658,14 @@ export class SessionManager implements Middleware {
     }
 
     private createStatusBarItem() {
-        if (this.statusBarItem === undefined) {
+        const statusTitle: string = "Show PowerShell Session Menu";
+        // TODO: Remove old status bar logic when we update our engine.
+        if (semver.gte(vscode.version, "1.65.0") && this.languageStatusItem === undefined) {
+            // @ts-ignore
+            this.languageStatusItem = vscode.languages.createLanguageStatusItem("powershell", this.documentSelector);
+            this.languageStatusItem.command = { title: statusTitle, command: this.ShowSessionMenuCommandName };
+            this.languageStatusItem.text = "$(terminal-powershell)";
+        } else if (this.statusBarItem === undefined) {
             // Create the status bar item and place it right next
             // to the language indicator
             this.statusBarItem =
@@ -641,7 +674,7 @@ export class SessionManager implements Middleware {
                     1);
 
             this.statusBarItem.command = this.ShowSessionMenuCommandName;
-            this.statusBarItem.tooltip = "Show PowerShell Session Menu";
+            this.statusBarItem.tooltip = statusTitle;
             this.statusBarItem.show();
             vscode.window.onDidChangeActiveTextEditor((textEditor) => {
                 if (textEditor === undefined
@@ -656,44 +689,66 @@ export class SessionManager implements Middleware {
 
     private setSessionStatus(statusText: string, status: SessionStatus): void {
         this.sessionStatus = status;
-        switch (status) {
-            case SessionStatus.Running:
-            case SessionStatus.NeverStarted:
-            case SessionStatus.NotStarted:
-                // This icon is available since 1.56, now our current engine version.
-                this.statusBarItem.text = "$(terminal-powershell)";
-                // These have to be reset because this function mutates state.
-                this.statusBarItem.color = undefined;
-                this.statusBarItem.backgroundColor = undefined;
-                break;
-            case SessionStatus.Initializing:
-            case SessionStatus.Stopping:
-                this.statusBarItem.text = "$(sync)";
-                // The warning colors were added later than our current engine version.
-                // https://code.visualstudio.com/api/references/theme-color#status-bar-colors
-                this.statusBarItem.color = (semver.gte(vscode.version, "1.59.0"))
-                    ? new vscode.ThemeColor("statusBarItem.warningForeground")
-                    : new vscode.ThemeColor("statusBarItem.errorForeground");
-                this.statusBarItem.backgroundColor = (semver.gte(vscode.version, "1.59.0"))
-                    ? new vscode.ThemeColor("statusBarItem.warningBackground")
-                    : new vscode.ThemeColor("statusBarItem.errorBackground");
-                break;
-            case SessionStatus.Failed:
-                this.statusBarItem.text = "$(alert)";
-                // The error colors have been available since 1.53.
-                this.statusBarItem.color = new vscode.ThemeColor("statusBarItem.errorForeground");
-                this.statusBarItem.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
-                break;
+        // TODO: Remove old status bar logic when we update our engine.
+        if (semver.gte(vscode.version, "1.65.0")) {
+            this.languageStatusItem.detail = "PowerShell " + statusText;
+            switch (status) {
+                case SessionStatus.Running:
+                case SessionStatus.NeverStarted:
+                case SessionStatus.NotStarted:
+                    this.languageStatusItem.busy = false;
+                    // @ts-ignore
+                    this.languageStatusItem.severity = vscode.LanguageStatusSeverity.Information;
+                    break;
+                case SessionStatus.Initializing:
+                case SessionStatus.Stopping:
+                    this.languageStatusItem.busy = true;
+                    // @ts-ignore
+                    this.languageStatusItem.severity = vscode.LanguageStatusSeverity.Warning;
+                    break;
+                case SessionStatus.Failed:
+                    this.languageStatusItem.busy = false;
+                    // @ts-ignore
+                    this.languageStatusItem.severity = vscode.LanguageStatusSeverity.Error;
+                    break;
+            }
+        } else {
+            switch (status) {
+                case SessionStatus.Running:
+                case SessionStatus.NeverStarted:
+                case SessionStatus.NotStarted:
+                    this.statusBarItem.text = "$(terminal-powershell)";
+                    // These have to be reset because this function mutates state.
+                    this.statusBarItem.color = undefined;
+                    this.statusBarItem.backgroundColor = undefined;
+                    break;
+                case SessionStatus.Initializing:
+                case SessionStatus.Stopping:
+                    this.statusBarItem.text = "$(sync)";
+                    this.statusBarItem.color = new vscode.ThemeColor("statusBarItem.warningForeground");
+                    this.statusBarItem.backgroundColor = new vscode.ThemeColor("statusBarItem.warningBackground");
+                    break;
+                case SessionStatus.Failed:
+                    this.statusBarItem.text = "$(alert)";
+                    this.statusBarItem.color = new vscode.ThemeColor("statusBarItem.errorForeground");
+                    this.statusBarItem.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
+                    break;
+            }
+            this.statusBarItem.text += " " + statusText;
         }
-        this.statusBarItem.text += " " + statusText;
+    }
+
+    private setSessionVersion(version: string): void {
+        // TODO: Accept a VersionDetails object instead of a string.
+        if (semver.gte(vscode.version, "1.65.0")) {
+            this.languageStatusItem.text = "$(terminal-powershell) " + version;
+        }
+        this.setSessionStatus(version, SessionStatus.Running);
     }
 
     private setSessionFailure(message: string, ...additionalMessages: string[]) {
         this.log.writeAndShowError(message, ...additionalMessages);
-
-        this.setSessionStatus(
-            "Initialization Error",
-            SessionStatus.Failed);
+        this.setSessionStatus("Initialization Error", SessionStatus.Failed);
     }
 
     private async changePowerShellDefaultVersion(exePath: IPowerShellExeDetails) {
@@ -766,7 +821,7 @@ export class SessionManager implements Middleware {
             new SessionMenuItem(
                 "Restart Current Session",
                 () => {
-                    // We pass in the display name so we guarentee that the session
+                    // We pass in the display name so we guarantee that the session
                     // will be the same PowerShell.
                     this.restartSession(this.PowerShellExeDetails.displayName);
                 }),
@@ -776,8 +831,8 @@ export class SessionManager implements Middleware {
                 () => { vscode.commands.executeCommand("PowerShell.OpenLogFolder"); }),
 
             new SessionMenuItem(
-                "Modify 'powerShell.powerShellAdditionalExePaths' in Settings",
-                () => { vscode.commands.executeCommand("workbench.action.openSettingsJson"); }),
+                "Modify list of additional PowerShell locations",
+                () => { vscode.commands.executeCommand("workbench.action.openSettings", "powerShellAdditionalExePaths"); }),
         ];
 
         vscode
@@ -796,6 +851,9 @@ class SessionMenuItem implements vscode.QuickPickItem {
         public readonly callback: () => void = () => {}) {
     }
 }
+
+export const SendKeyPressNotificationType =
+    new NotificationType<void>("powerShell/sendKeyPress");
 
 export const PowerShellVersionRequestType =
     new RequestType0<IPowerShellVersionDetails, void>(
